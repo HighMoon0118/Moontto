@@ -20,6 +20,7 @@ class Utils(context: Context) {
 
     fun getNumbersOf(round: Int): List<Int> =
         sharedPreferences.getString("$round", null)?.run {
+            Log.d("Utils", "getNumbersOf")
             split("/").map {
                 var number = -1
                 try {
@@ -31,6 +32,7 @@ class Utils(context: Context) {
             }
         } ?: emptyList()
     fun setNumbersOf(round: Int, data: String) {
+        Log.d("Utils", "setNumbersOf")
         val jsonObject = JsonParser.parseString(data) as JsonObject
         val sb = StringBuilder()
 

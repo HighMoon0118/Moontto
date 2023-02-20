@@ -27,6 +27,7 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
     private val scope = CoroutineScope(Dispatchers.Main)
 
     private fun getAllNumbers(): MutableLiveData<ArrayList<List<Int>>> {
+        Log.d("MainViewModel", "getAllNumbers")
         val tmpList = arrayListOf<List<Int>>()
         var round = 1
         while (true) {
@@ -43,12 +44,14 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
     }
 
     fun updateNumbers() {
+        Log.d("MainViewModel", "updateNumbers")
         scope.launch {
             requestLotto(1)
         }
     }
 
     fun requestLotto(round: Int) {
+        Log.d("MainViewModel", "requestLotto")
         if (lottoNumbers.value != null && lottoNumbers.value!!.size > round && lottoNumbers.value!![round - 1].isNotEmpty()) {
             scope.launch { requestLotto(round + 1) }
         } else if (utils.getNumbersOf(round).isNotEmpty()) {
