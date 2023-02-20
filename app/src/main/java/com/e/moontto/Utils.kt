@@ -21,7 +21,13 @@ class Utils(context: Context) {
     fun getNumbersOf(round: Int): List<Int> =
         sharedPreferences.getString("$round", null)?.run {
             split("/").map {
-                it.toInt()
+                var number = -1
+                try {
+                    number = it.toInt()
+                } catch (e: Exception) {
+                    println(e)
+                }
+                number
             }
         } ?: emptyList()
     fun setNumbersOf(round: Int, data: String) {

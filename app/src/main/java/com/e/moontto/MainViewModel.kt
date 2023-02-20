@@ -24,7 +24,7 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
     }
     private val utils = Utils(context)
     private val requestQueue = Volley.newRequestQueue(context)
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     private fun getAllNumbers(): MutableLiveData<ArrayList<List<Int>>> {
         val tmpList = arrayListOf<List<Int>>()
@@ -50,24 +50,23 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
 
     fun requestLotto(round: Int) {
         if (lottoNumbers.value != null && lottoNumbers.value!!.size > round && lottoNumbers.value!![round - 1].isNotEmpty()) {
-            scope.launch { requestLotto(round) }
+            scope.launch { requestLotto(round + 1) }
         } else if (utils.getNumbersOf(round).isNotEmpty()) {
             lottoNumbers.value?.add(round - 1, utils.getNumbersOf(round))
-            scope.launch { requestLotto(round) }
+            scope.launch { requestLotto(round + 1) }
         } else {
             val url = "https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=$round"
 
             val request = object : StringRequest(
                 url,
                 Response.Listener { response ->
-                    if (response == null) return@Listener
+                    if (response == null || response.contains("fail")) return@Listener
                     utils.setNumbersOf(round, response)
                     lottoNumbers.value?.add(round - 1, utils.getNumbersOf(round))
-                    scope.launch { requestLotto(round) }
+                    scope.launch { requestLotto(round + 1) }
                 },
                 Response.ErrorListener {
-                    Log.d("requestLotto", "$it")
-                    Toast.makeText(context, "업데이트를 완료했습니다.", Toast.LENGTH_SHORT).show()
+                    Log.d("error", "$it")
                 }
             ) {
                 override fun getParams(): MutableMap<String, String>? {

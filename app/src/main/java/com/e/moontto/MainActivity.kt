@@ -1,6 +1,7 @@
 package com.e.moontto
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -65,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     Row {
                         repeat(7) { idx ->
-                            Text(text = "${lotto[round][idx]}")
+                            Text(text = "${lotto[round][idx]} / ")
                         }
                     }
                 }
