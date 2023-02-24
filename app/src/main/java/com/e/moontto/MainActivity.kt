@@ -16,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -117,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 .thenByDescending { 최근회차 - (it.lastRound ?: 1) }
             )
 
-        TableRow(listOf(Pair("등수", 1f), Pair("번호", 1f), Pair("횟수", 1f), Pair("마지막 등장", 1.5f), Pair("확률", 1f)))
+        TableRow(listOf(Pair("등수", 1f), Pair("번호", 1f), Pair("횟수", 1f), Pair("마지막 등장", 1.5f), Pair("확률", 1f)), false)
 
         if (moonttoList.size > 1) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
@@ -130,7 +131,8 @@ class MainActivity : AppCompatActivity() {
                             Pair("${moonttoList[i+1].count}", 1f),
                             Pair("${moonttoList[i+1].lastRound}회 (${최근회차 - (moonttoList[i+1].lastRound ?: 1)})", 1.5f),
                             Pair("${moonttoList[i+1].probability}%", 1f)
-                        )
+                        ),
+                        moonttoList[i+1].lastRound == 최근회차
                     )
                 }
             }
@@ -139,7 +141,8 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     fun TableRow(
-        value: List<Pair<String, Float>>
+        value: List<Pair<String, Float>>,
+        isHighlight: Boolean
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().height(20.dp),
@@ -149,7 +152,9 @@ class MainActivity : AppCompatActivity() {
                 Text(
                     modifier = Modifier.weight(value[i].second),
                     style = TextStyle(textAlign = TextAlign.Center),
-                    text = value[i].first
+                    text = value[i].first,
+                    color = if (isHighlight) Color.Red else Color.Black,
+                    fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal
                 )
             }
         }
