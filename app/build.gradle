@@ -4,6 +4,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('key')
+            storePassword 'octopus123'
+            keyAlias 'key'
+            keyPassword 'octopus123'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
@@ -20,6 +28,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
