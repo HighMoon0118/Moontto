@@ -32,6 +32,13 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
+import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
+import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
+import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.views.chart.line.lineChart
 import kotlinx.coroutines.launch
 import java.lang.StringBuilder
 
@@ -84,6 +91,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        val PERIOD = 30
+
+        if (lotto.size >= PERIOD) {
+            val chartData = lotto.subList(lotto.size - PERIOD, lotto.size).let { list ->
+                val numList = Array(45) { 0 }
+                for (numbers in list) for (number in numbers) numList[number - 1]++
+
+                List<ArrayList<Int>>( PERIOD + 1 ) { arrayListOf() }.also { countList ->
+                    numList.forEachIndexed { nI, num -> countList[num].add(nI + 1)}
+                }
+            }
+
+            CountChart(
+                chartData.mapIndexed { index, data ->
+                    FloatEntry(
+                        x = index.toFloat(),
+                        y = data.size.toFloat()
+                    )
+                }
+            )
+        }
     }
 
     @Composable
@@ -93,7 +122,9 @@ class MainActivity : AppCompatActivity() {
         numbers: List<Int>
     ) {
         Column(
-            modifier = Modifier.width(roundWidth).height(80.dp)
+            modifier = Modifier
+                .width(roundWidth)
+                .height(80.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Text(text = "${round + 1}", fontWeight = FontWeight.Bold)
@@ -112,6 +143,7 @@ class MainActivity : AppCompatActivity() {
 
     ) {
         val 최근회차 = mainViewModel.lottoMap.value?.size ?: 1
+
         val moonttoList = mainViewModel.moonttoNumbers.observeAsState(arrayListOf()).value
             .sortedWith(
                 compareBy<MainViewModel.Companion.MoonttoNumber> { it.count }
@@ -145,7 +177,9 @@ class MainActivity : AppCompatActivity() {
         isHighlight: Boolean
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp),
 //            horizontalArrangement = Arrangement.SpaceAround
         ) {
             repeat(value.size) { i ->
@@ -158,5 +192,21 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    @Composable
+    fun CountChart(
+        entry: List<FloatEntry>
+    ) {
+        val producer = ChartEntryModelProducer(entry)
+
+        Chart(
+            chart = lineChart(applicationContext),
+            chartModelProducer = producer,
+            startAxis = startAxis(),
+            bottomAxis = bottomAxis(
+                tickPosition = HorizontalAxis.TickPosition.Center(1, 3)
+            )
+        )
     }
 }
