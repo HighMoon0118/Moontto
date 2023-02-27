@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../../layout/compose-model-1676937824842.xml" value="0.1" />
+        <entry key="../../../../../layout/compose-model-1677030272178.xml" value="0.926829268292683" />
+        <entry key="../../../../../layout/compose-model-1677039015977.xml" value="0.926829268292683" />
         <entry key="..\:/Users/USER/myAndroidProjects/Moontto3/app/src/main/res/layout/activity_main.xml" value="0.34739583333333335" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

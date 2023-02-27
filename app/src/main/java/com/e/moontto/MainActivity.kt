@@ -2,21 +2,25 @@ package com.e.moontto
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -33,11 +37,18 @@ import com.android.volley.toolbox.Volley
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.endAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
+import com.patrykandpatrick.vico.core.axis.Axis
 import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
+import com.patrykandpatrick.vico.core.chart.scale.AutoScaleUp
+import com.patrykandpatrick.vico.core.component.shape.LineComponent
+import com.patrykandpatrick.vico.core.component.shape.Shape
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.patrykandpatrick.vico.core.entry.FloatEntry
+import com.patrykandpatrick.vico.core.formatter.ValueFormatter
 import com.patrykandpatrick.vico.views.chart.line.lineChart
 import kotlinx.coroutines.launch
 import java.lang.StringBuilder
@@ -66,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         TitleLayout()
         MoonttoTable()
+        MoonttoGrid()
     }
 
     @Composable
@@ -96,19 +108,19 @@ class MainActivity : AppCompatActivity() {
 
         if (lotto.size >= PERIOD) {
             val chartData = lotto.subList(lotto.size - PERIOD, lotto.size).let { list ->
-                val numList = Array(45) { 0 }
-                for (numbers in list) for (number in numbers) numList[number - 1]++
+                val numList = Array(46) { 0 }
+                for (numbers in list) for (number in numbers) numList[number]++
 
                 List<ArrayList<Int>>( PERIOD + 1 ) { arrayListOf() }.also { countList ->
-                    numList.forEachIndexed { nI, num -> countList[num].add(nI + 1)}
+                    numList.forEachIndexed { num, count -> countList[count].add(num)}
                 }
             }
 
             CountChart(
-                chartData.mapIndexed { index, data ->
+                chartData.mapIndexed { index, numList ->
                     FloatEntry(
                         x = index.toFloat(),
-                        y = data.size.toFloat()
+                        y = numList.size.toFloat()
                     )
                 }
             )
@@ -153,7 +165,7 @@ class MainActivity : AppCompatActivity() {
         TableRow(listOf(Pair("등수", 1f), Pair("번호", 1f), Pair("횟수", 1f), Pair("마지막 등장", 1.5f), Pair("확률", 1f)), false)
 
         if (moonttoList.size > 1) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            LazyColumn(modifier = Modifier.fillMaxWidth().height(160.dp)) {
 
                 itemsIndexed(items = moonttoList.subList(1, moonttoList.size)) { i, _ ->
                     TableRow(
@@ -201,12 +213,55 @@ class MainActivity : AppCompatActivity() {
         val producer = ChartEntryModelProducer(entry)
 
         Chart(
-            chart = lineChart(applicationContext),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            chart = lineChart(baseContext),
             chartModelProducer = producer,
             startAxis = startAxis(),
             bottomAxis = bottomAxis(
-                tickPosition = HorizontalAxis.TickPosition.Center(1, 3)
-            )
+//                tickPosition = HorizontalAxis.TickPosition.Center(0, 10)
+            ),
         )
+    }
+
+    @Composable
+    fun MoonttoGrid(
+
+    ) {
+        val lotto = mainViewModel.lottoMap.observeAsState(emptyMap()).value.run {
+            toList().sortedWith(compareBy { - it.first }).map { it.second }
+        }
+
+        if (lotto.size > 1) {
+            BoxWithConstraints(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                val width = (maxWidth - 30.dp) / 45
+
+                LazyColumn {
+                    itemsIndexed(items = lotto) { i, list ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "${lotto.size - i + 1}회",
+                                modifier = Modifier.width(30.dp),
+                                fontSize = 8.sp
+                            )
+                            repeat(45) { num ->
+                                Text(
+                                    text = if (list.contains(num + 1)) "${num + 1}" else "",
+                                    fontSize = 4.sp,
+                                    modifier = Modifier
+                                        .size(width)
+                                        .background(
+                                            color = if (list.contains(num + 1)) Color.Green else Color.White
+                                        )
+                                        .border(border = BorderStroke((0.5).dp, Color.Black), shape = RectangleShape),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
