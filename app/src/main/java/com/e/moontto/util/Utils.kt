@@ -1,4 +1,4 @@
-package com.e.moontto
+package com.e.moontto.util
 
 import android.content.Context
 import android.content.SharedPreferences

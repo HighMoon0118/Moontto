@@ -2,20 +2,15 @@ package com.e.moontto
 
 import android.app.Application
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.e.moontto.util.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.StringBuilder
-import kotlin.coroutines.coroutineContext
 
 class MainViewModel(val context: Application): AndroidViewModel(context) {
 
@@ -60,7 +55,7 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
 //    }
 
     fun updateNumbers() {
-        Log.d("MainViewModel", "updateNumbers")
+        Log.d("ㅇㅇㅇ MainViewModel", "updateNumbers")
         scope.launch {
             requestLotto(1)
         }
@@ -102,7 +97,7 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
 //    }
 
     fun requestLotto(round: Int) {
-        Log.d("MainViewModel", "requestLotto")
+        Log.d("ㅇㅇㅇ MainViewModel", "requestLotto")
         if (lottoMap.value != null && lottoMap.value!!.size > round && lottoMap.value!![round - 1]?.isNotEmpty() == true) {
             scope.launch { requestLotto(round + 1) }
         } else if (utils.getNumbersOf(round).isNotEmpty()) {
@@ -123,7 +118,7 @@ class MainViewModel(val context: Application): AndroidViewModel(context) {
                     scope.launch { requestLotto(round + 1) }
                 },
                 Response.ErrorListener {
-                    Log.d("error", "$it")
+                    Log.d("ㅇㅇㅇ error", "$it")
                     getMoonttoNumbers()
                 }
             ) {

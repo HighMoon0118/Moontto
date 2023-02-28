@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Moontto</string>
+    <string name="analysis">분석</string>
+    <string name="moontto">문토</string>
 </resources>
